@@ -25,11 +25,19 @@ git push origin main
 echo "✅ Fork 已同步到上游最新状态"
 
 while true; do
-    # 4. 创建特性分支
-    branch_name="update_$(date +%Y%m%d_%H%M%S)"
-    git checkout -b "$branch_name"
-    
-    echo "✅ 已创建并切换到分支: $branch_name"
+    # 4. 检查是否已有以 update_ 开头的分支
+    existing_branch=$(git branch --list "update_*" | head -n 1 | sed 's/* //;s/ //g')
+
+    if [ -n "$existing_branch" ]; then
+        echo "🔁 检测到已存在的更新分支: $existing_branch"
+        git checkout "$existing_branch"
+        branch_name="$existing_branch"
+    else
+        # 如果没有，就新建一个
+        branch_name="update_$(date +%Y%m%d_%H%M%S)"
+        git checkout -b "$branch_name"
+        echo "✅ 已创建并切换到分支: $branch_name"
+    fi
 
     echo "=== 已经准备好! 您现在可以开始更新 qqbb 空间... ==="
     
